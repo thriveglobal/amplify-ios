@@ -16,9 +16,18 @@ public protocol DataStoreBaseBehavior {
                         where condition: QueryPredicate?,
                         completion: @escaping DataStoreCallback<M>)
 
+    @available(*, deprecated, message: "Use query(:byIdentifier:completion)")
     func query<M: Model>(_ modelType: M.Type,
                          byId id: String,
                          completion: DataStoreCallback<M?>)
+
+    func query<M: ModelIdentifiable>(_ modelType: M.Type,
+                                     byIdentifier id: String,
+                                     completion: DataStoreCallback<M?>) where M.IdentifierFormat == ModelIdentifierFormat.Default
+
+    func query<M: ModelIdentifiable>(_ modelType: M.Type,
+                                     byIdentifier id: M.Identifier,
+                                     completion: DataStoreCallback<M?>) where M.IdentifierFormat == ModelIdentifierFormat.Custom
 
     func query<M: Model>(_ modelType: M.Type,
                          where predicate: QueryPredicate?,
@@ -30,10 +39,22 @@ public protocol DataStoreBaseBehavior {
                           where predicate: QueryPredicate?,
                           completion: @escaping DataStoreCallback<Void>)
 
+    @available(*, deprecated, message: "Use delete(:withIdentifier:where:completion)")
     func delete<M: Model>(_ modelType: M.Type,
                           withId id: String,
                           where predicate: QueryPredicate?,
                           completion: @escaping DataStoreCallback<Void>)
+
+    func delete<M: ModelIdentifiable>(_ modelType: M.Type,
+                                      withIdentifier id: String,
+                                      where predicate: QueryPredicate?,
+                                      completion: @escaping DataStoreCallback<Void>) where M.IdentifierFormat == ModelIdentifierFormat.Default
+
+    func delete<M: ModelIdentifiable>(_ modelType: M.Type,
+                                      withIdentifier id: M.Identifier,
+                                      where predicate: QueryPredicate?,
+                                      completion: @escaping DataStoreCallback<Void>) where M.IdentifierFormat == ModelIdentifierFormat.Custom
+
     /**
      Synchronization starts automatically whenever you run any DataStore operation (query(), save(), delete())
      however, you can explicitly begin the process with DatasStore.start()

@@ -80,6 +80,18 @@ extension AWSDataStorePlugin: DataStoreBaseBehavior {
         }
     }
 
+    public func query<M: ModelIdentifiable>(_ modelType: M.Type,
+                                            byIdentifier id: String,
+                                            completion: (DataStoreResult<M?>) -> Void) where M.IdentifierFormat == ModelIdentifierFormat.Default {
+       // TODO: do the thing
+    }
+
+    public func query<M: ModelIdentifiable>(_ modelType: M.Type,
+                                            byIdentifier id: M.Identifier,
+                                            completion: (DataStoreResult<M?>) -> Void) where M.IdentifierFormat == ModelIdentifierFormat.Custom {
+        // TODO: do the thing
+    }
+
     public func query<M: Model>(_ modelType: M.Type,
                                 where predicate: QueryPredicate? = nil,
                                 sort sortInput: QuerySortInput? = nil,
@@ -124,6 +136,21 @@ extension AWSDataStorePlugin: DataStoreBaseBehavior {
         storageEngine.delete(modelType, modelSchema: modelSchema, withId: id, predicate: predicate) { result in
             self.onDeleteCompletion(result: result, modelSchema: modelSchema, completion: completion)
         }
+    }
+
+    public func delete<M: ModelIdentifiable>(_ modelType: M.Type,
+                                             withIdentifier id: String,
+                                             where predicate: QueryPredicate?,
+                                             completion: @escaping DataStoreCallback<Void>) where M.IdentifierFormat == ModelIdentifierFormat.Default {
+
+        // TODO: do the thing
+    }
+
+    public func delete<M: ModelIdentifiable>(_ modelType: M.Type,
+                                             withIdentifier id: M.Identifier,
+                                             where predicate: QueryPredicate?,
+                                             completion: @escaping DataStoreCallback<Void>) where M.IdentifierFormat == ModelIdentifierFormat.Custom {
+        // TODO: do the thing
     }
 
     public func delete<M: Model>(_ model: M,

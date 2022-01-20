@@ -339,6 +339,7 @@
 		762C978526210F6400798FA3 /* RecordCover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 762C978426210F6400798FA3 /* RecordCover.swift */; };
 		762C978E26210FF100798FA3 /* RecordCover+Schema.swift in Sources */ = {isa = PBXBuildFile; fileRef = 762C978D26210FF100798FA3 /* RecordCover+Schema.swift */; };
 		7638895326A7A9AC0061AF0B /* AWSLambdaAuthConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7638895226A7A9AC0061AF0B /* AWSLambdaAuthConfiguration.swift */; };
+		7674E5262798DD8F008F58F4 /* ModelIdentifiable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7674E5252798DD8F008F58F4 /* ModelIdentifiable.swift */; };
 		7678B38426017D5300B4917F /* AppSyncErrorTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7678B38326017D5300B4917F /* AppSyncErrorTypeTests.swift */; };
 		7678B38526017D5300B4917F /* AppSyncErrorTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7678B38326017D5300B4917F /* AppSyncErrorTypeTests.swift */; };
 		767F85FC2649FF540076D633 /* CustomerOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 767F85FB2649FF540076D633 /* CustomerOrder.swift */; };
@@ -1261,6 +1262,7 @@
 		762C978D26210FF100798FA3 /* RecordCover+Schema.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RecordCover+Schema.swift"; sourceTree = "<group>"; };
 		762F70A326683EE2001F8252 /* AuthRuleExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthRuleExtensionTests.swift; sourceTree = "<group>"; };
 		7638895226A7A9AC0061AF0B /* AWSLambdaAuthConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWSLambdaAuthConfiguration.swift; sourceTree = "<group>"; };
+		7674E5252798DD8F008F58F4 /* ModelIdentifiable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelIdentifiable.swift; sourceTree = "<group>"; };
 		7678B38326017D5300B4917F /* AppSyncErrorTypeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSyncErrorTypeTests.swift; sourceTree = "<group>"; };
 		767F85FB2649FF540076D633 /* CustomerOrder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomerOrder.swift; sourceTree = "<group>"; };
 		767F85FD2649FFCC0076D633 /* CustomerOrder+Schema.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CustomerOrder+Schema.swift"; sourceTree = "<group>"; };
@@ -3086,6 +3088,7 @@
 			children = (
 				B4944D1F251C06D300BF0BFE /* JSONHelper */,
 				B92E03A72367CE7A006CEB8D /* Model.swift */,
+				7674E5252798DD8F008F58F4 /* ModelIdentifiable.swift */,
 				FA8EE778238627040097E4F1 /* Model+ModelName.swift */,
 				2129BE502395A66F006363A1 /* AmplifyModelRegistration.swift */,
 				B9FAA1232388BE2B009414B4 /* Collection */,
@@ -5143,6 +5146,7 @@
 				B4F7F3E824621E6200544B04 /* AuthAttributeResendConfirmationCodeRequest.swift in Sources */,
 				B4D3853A236C97360014653D /* PredictionsInterpretRequest.swift in Sources */,
 				5CF43D092728C64100F636E1 /* Geo+Error.swift in Sources */,
+				7674E5262798DD8F008F58F4 /* ModelIdentifiable.swift in Sources */,
 				2144226C234BDD9B009357F7 /* StorageUploadFileRequest.swift in Sources */,
 				FAA2E8CA23A02A2600E420EA /* DataStoreCategory+Resettable.swift in Sources */,
 				B9B50DC423D917BB0086F1E1 /* TemporalFormat+Date.swift in Sources */,

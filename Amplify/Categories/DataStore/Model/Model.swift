@@ -26,6 +26,7 @@ public protocol Model: Codable {
     /// undefined behavior.
     var modelName: String { get }
 
+    @available(*, deprecated, message: "Use ModelIdentifiable conformance")
     /// The Model identifier (aka primary key)
     var id: Identifier { get }
 }
