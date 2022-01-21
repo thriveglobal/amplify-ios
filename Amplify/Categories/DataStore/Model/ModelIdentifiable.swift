@@ -41,25 +41,20 @@ public protocol ModelIdentifier {
     var fields: [ModelFieldName: Persistable] { get }
 }
 
-
 public struct ModelIdentifierDefault: ModelIdentifier {
     static let fieldName = "id"
 
-    public var fields: [ModelFieldName : Persistable]
+    public var fields: [ModelFieldName: Persistable]
 
-    public init(fields: [ModelFieldName : Persistable]) {
-        self.fields = fields
-    }
-
-    static func identifier(id: String) -> ModelIdentifierDefault {
-        ModelIdentifierDefault(fields: [fieldName: id])
+    public init(id: String) {
+        self.fields = [Self.fieldName: id]
     }
 }
 
 public struct ModelIdentifierCustom {
-    public var fields: [ModelFieldName : Persistable]
+    public var fields: [ModelFieldName: Persistable]
 
-    public init(fields: [ModelFieldName : Persistable]) {
+    public init(fields: [ModelFieldName: Persistable]) {
         self.fields = fields
     }
 }
