@@ -264,8 +264,8 @@ final class SQLiteStorageEngineAdapter: StorageEngineAdapter {
     func exists(_ modelSchema: ModelSchema,
                 withId id: Model.Identifier,
                 predicate: QueryPredicate? = nil) throws -> Bool {
-        let primaryKey = modelSchema.primaryKey.sqlName
-        var sql = "select count(\(primaryKey)) from \"\(modelSchema.name)\" where \(primaryKey) = ?"
+        let primaryKey = modelSchema.primaryKey.map { "\($0.sqlName) = ?" }.joined(separator: " and ")
+        var sql = "select count(\(primaryKey)) from \"\(modelSchema.name)\" where \(primaryKey)"
         var variables: [Binding?] = [id]
         if let predicate = predicate {
             let conditionStatement = ConditionStatement(modelSchema: modelSchema, predicate: predicate)

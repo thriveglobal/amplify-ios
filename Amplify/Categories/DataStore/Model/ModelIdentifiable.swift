@@ -7,9 +7,9 @@
 
 import Foundation
 
-/// TODO: for backward compatibility, returns an empty string as default for models
-/// with a different primary key
 extension Model {
+    /// TODO: for backward compatibility, returns an empty string as default for models
+    /// with a different primary key
     public var id: Identifier { "" }
 }
 
@@ -28,28 +28,38 @@ public protocol ModelIdentifiable {
     associatedtype IdentifierFormat: AnyModelIdentifierFormat
     associatedtype Identifier: ModelIdentifier
 }
+
 public extension ModelIdentifiable where IdentifierFormat == ModelIdentifierFormat.Default {
-    typealias Identifier = ModelDefaultId
+    typealias Identifier = ModelIdentifierDefault
+}
+
+public extension ModelIdentifiable where IdentifierFormat == ModelIdentifierFormat.Custom {
+    typealias Identifier = ModelIdentifierCustom
 }
 
 public protocol ModelIdentifier {
-    func serialized() -> ModelIdentifierSerialized
+    var fields: [ModelFieldName: Persistable] { get }
 }
-public extension ModelIdentifier {
-    func serialized() -> ModelIdentifierSerialized {
-        // TODO default implementation
-        .custom([:])
+
+
+public struct ModelIdentifierDefault: ModelIdentifier {
+    static let fieldName = "id"
+
+    public var fields: [ModelFieldName : Persistable]
+
+    public init(fields: [ModelFieldName : Persistable]) {
+        self.fields = fields
+    }
+
+    static func identifier(id: String) -> ModelIdentifierDefault {
+        ModelIdentifierDefault(fields: [fieldName: id])
     }
 }
 
-public enum ModelIdentifierSerialized {
-    case id
-    case custom([String: Persistable])
-}
+public struct ModelIdentifierCustom {
+    public var fields: [ModelFieldName : Persistable]
 
-public struct ModelDefaultId: ModelIdentifier {
-    var id: String
-    static func identifier(id: String) -> ModelDefaultId {
-        ModelDefaultId(id: id)
+    public init(fields: [ModelFieldName : Persistable]) {
+        self.fields = fields
     }
 }

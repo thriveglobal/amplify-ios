@@ -80,15 +80,17 @@ extension AWSDataStorePlugin: DataStoreBaseBehavior {
         }
     }
 
-    public func query<M: ModelIdentifiable>(_ modelType: M.Type,
+    public func query<M: Model>(_ modelType: M.Type,
                                             byIdentifier id: String,
-                                            completion: (DataStoreResult<M?>) -> Void) where M.IdentifierFormat == ModelIdentifierFormat.Default {
+                                completion: (DataStoreResult<M?>) -> Void) where M:ModelIdentifiable,
+                                                                                 M.IdentifierFormat == ModelIdentifierFormat.Default {
        // TODO: do the thing
     }
 
-    public func query<M: ModelIdentifiable>(_ modelType: M.Type,
+    public func query<M: Model>(_ modelType: M.Type,
                                             byIdentifier id: M.Identifier,
-                                            completion: (DataStoreResult<M?>) -> Void) where M.IdentifierFormat == ModelIdentifierFormat.Custom {
+                                            completion: (DataStoreResult<M?>) -> Void) where M: ModelIdentifiable,
+                                                                                             M.IdentifierFormat == ModelIdentifierFormat.Custom {
         // TODO: do the thing
     }
 
@@ -138,18 +140,20 @@ extension AWSDataStorePlugin: DataStoreBaseBehavior {
         }
     }
 
-    public func delete<M: ModelIdentifiable>(_ modelType: M.Type,
+    public func delete<M: Model>(_ modelType: M.Type,
                                              withIdentifier id: String,
                                              where predicate: QueryPredicate?,
-                                             completion: @escaping DataStoreCallback<Void>) where M.IdentifierFormat == ModelIdentifierFormat.Default {
+                                             completion: @escaping DataStoreCallback<Void>) where M: ModelIdentifiable,
+                                                                                                  M.IdentifierFormat == ModelIdentifierFormat.Default {
 
         // TODO: do the thing
     }
 
-    public func delete<M: ModelIdentifiable>(_ modelType: M.Type,
+    public func delete<M: Model>(_ modelType: M.Type,
                                              withIdentifier id: M.Identifier,
                                              where predicate: QueryPredicate?,
-                                             completion: @escaping DataStoreCallback<Void>) where M.IdentifierFormat == ModelIdentifierFormat.Custom {
+                                             completion: @escaping DataStoreCallback<Void>) where M: ModelIdentifiable,
+                                                                                                  M.IdentifierFormat == ModelIdentifierFormat.Custom {
         // TODO: do the thing
     }
 

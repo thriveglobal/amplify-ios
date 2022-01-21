@@ -204,6 +204,7 @@ public enum ModelFieldDefinition {
         return id(key.stringValue)
     }
 
+    @available(*, deprecated, message: "Use .field(name:type:attributes: [.primaryKey])")
     public static func id(_ name: String = "id") -> ModelFieldDefinition {
         return .field(name: name,
                       type: .string,

@@ -40,7 +40,7 @@ public struct ModelField {
     public let authRules: AuthRules
 
     public var isPrimaryKey: Bool {
-        return name == "id"
+        return attributes.contains { $0 == .primaryKey }
     }
 
     public init(name: String,
@@ -87,11 +87,13 @@ public struct ModelSchema {
 
     public let sortedFields: [ModelField]
 
-    public var primaryKey: ModelField {
-        guard let primaryKey = fields.first(where: { $1.isPrimaryKey }) else {
+    public var primaryKey: [ModelField] {
+        let primaryKeys = fields.filter { $1.isPrimaryKey }
+        guard !primaryKeys.isEmpty else {
             preconditionFailure("Primary Key not defined for `\(name)`")
         }
-        return primaryKey.value
+
+        return primaryKeys.map { $0.value }
     }
 
     public init(name: String,

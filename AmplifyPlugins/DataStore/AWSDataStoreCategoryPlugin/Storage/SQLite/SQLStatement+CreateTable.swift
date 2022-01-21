@@ -26,9 +26,6 @@ struct CreateTableStatement: SQLStatement {
 
         for (index, column) in columns.enumerated() {
             statement += "  \"\(column.sqlName)\" \(column.sqlType.rawValue)"
-            if column.isPrimaryKey {
-                statement += " primary key"
-            }
             if column.isRequired {
                 statement += " not null"
             }
@@ -41,6 +38,12 @@ struct CreateTableStatement: SQLStatement {
                 statement += ",\n"
             }
         }
+        
+        // add primary key constraint using syntax PRIMARY KEY (fields..)
+        let primaryKeyFields = modelSchema.primaryKey
+            .map { "\"\($0.sqlName)\"" }
+            .joined(separator: ", ")
+        statement += ",\n  primary key (\(primaryKeyFields))"
 
         let hasForeignKeys = !foreignKeys.isEmpty
         if hasForeignKeys {
@@ -55,9 +58,9 @@ struct CreateTableStatement: SQLStatement {
                 Could not retrieve schema for the model \(associatedModel), verify that datastore is initialized.
                 """)
             }
-            let associatedId = schema.primaryKey
+            let associatedId = schema.primaryKey.map { "\"\($0.sqlName)\"" }.joined(separator: ", ")
             let associatedModelName = schema.name
-            statement += "references \"\(associatedModelName)\"(\"\(associatedId.sqlName)\")\n"
+            statement += "references \"\(associatedModelName)\"(\(associatedId)\n"
             statement += "    on delete cascade"
             let isNotLastKey = index < foreignKeys.endIndex - 1
             if isNotLastKey {

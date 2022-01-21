@@ -157,7 +157,8 @@ extension Model {
         if let modelValue = value as? Model {
             return modelValue.id
         } else if let value = value as? [String: JSONValue],
-                  case .string(let primaryKeyValue) = value[modelSchema.primaryKey.name] {
+                  // TODO: fix this when associated model has composite primary key
+                  case .string(let primaryKeyValue) = value[modelSchema.primaryKey[0].name] {
             return primaryKeyValue
         }
 
