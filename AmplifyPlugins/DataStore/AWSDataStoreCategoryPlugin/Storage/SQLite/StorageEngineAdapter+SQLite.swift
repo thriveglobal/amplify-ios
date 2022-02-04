@@ -132,7 +132,7 @@ final class SQLiteStorageEngineAdapter: StorageEngineAdapter {
                         completion: DataStoreCallback<M>) {
         do {
             let modelType = type(of: model)
-            let modelExists = try exists(modelSchema, withId: model.id)
+            let modelExists = try exists(modelSchema, withId: model.identifier.stringValue)
 
             if !modelExists {
                 if let condition = condition, !condition.isAll {
@@ -149,7 +149,7 @@ final class SQLiteStorageEngineAdapter: StorageEngineAdapter {
 
             if modelExists {
                 if let condition = condition, !condition.isAll {
-                    let modelExistsWithCondition = try exists(modelSchema, withId: model.id, predicate: condition)
+                    let modelExistsWithCondition = try exists(modelSchema, withId: model.identifier.stringValue, predicate: condition)
                     if !modelExistsWithCondition {
                         let dataStoreError = DataStoreError.invalidCondition(
                         "Save failed due to condition did not match existing model instance.",
@@ -167,7 +167,7 @@ final class SQLiteStorageEngineAdapter: StorageEngineAdapter {
             }
 
             // load the recent saved instance and pass it back to the callback
-            query(modelType, modelSchema: modelSchema, predicate: field("id").eq(model.id)) {
+            query(modelType, modelSchema: modelSchema, predicate: field("id").eq(model.identifier.stringValue)) {
                 switch $0 {
                 case .success(let result):
                     if let saved = result.first {
@@ -260,13 +260,13 @@ final class SQLiteStorageEngineAdapter: StorageEngineAdapter {
             completion(.failure(causedBy: error))
         }
     }
-
+    
     func exists(_ modelSchema: ModelSchema,
-                withId id: Model.Identifier,
+                withIdentifier identifier: ModelIdentifier,
                 predicate: QueryPredicate? = nil) throws -> Bool {
         let primaryKey = modelSchema.primaryKey.map { "\($0.sqlName) = ?" }.joined(separator: " and ")
         var sql = "select count(\(primaryKey)) from \"\(modelSchema.name)\" where \(primaryKey)"
-        var variables: [Binding?] = [id]
+        var variables: [Binding?] = identifier.map { $0.value.asBinding() }
         if let predicate = predicate {
             let conditionStatement = ConditionStatement(modelSchema: modelSchema, predicate: predicate)
             sql = """
@@ -287,6 +287,15 @@ final class SQLiteStorageEngineAdapter: StorageEngineAdapter {
         return false
     }
 
+    func exists(_ modelSchema: ModelSchema,
+                withId id: Model.Identifier,
+                predicate: QueryPredicate? = nil) throws -> Bool {
+        return try exists(modelSchema,
+                          // TODO CPK: replace this to use a shared/default initialiazer
+                          withIdentifier: [(name: "id", value: id)],
+                          predicate: predicate)
+    }
+
     func queryMutationSync(forAnyModel anyModel: AnyModel) throws -> MutationSync<AnyModel>? {
         let model = anyModel.instance
         let results = try queryMutationSync(for: [model], modelName: anyModel.modelName)
@@ -303,7 +312,7 @@ final class SQLiteStorageEngineAdapter: StorageEngineAdapter {
 
         // group models by id for fast access when creating the tuple
         let modelById = Dictionary(grouping: models,
-                                   by: { MutationSyncMetadata.identifier(modelName: modelName, modelId: $0.id) })
+                                   by: { MutationSyncMetadata.identifier(modelName: modelName, modelId: $0.identifier.stringValue) })
             .mapValues { $0.first! }
         let ids = [String](modelById.keys)
         let rows = try connection.prepare(sql).bind(ids)

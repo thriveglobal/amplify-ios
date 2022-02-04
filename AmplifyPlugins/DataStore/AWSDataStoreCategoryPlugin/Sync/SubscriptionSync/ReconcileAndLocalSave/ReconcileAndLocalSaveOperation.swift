@@ -425,7 +425,7 @@ class ReconcileAndLocalSaveOperation: AsynchronousOperation {
             log.error("Could not notify mutation event")
             return
         }
-        let mutationEvent = MutationEvent(modelId: savedModel.model.instance.id,
+        let mutationEvent = MutationEvent(modelId: savedModel.model.instance.identifier.stringValue,
                                           modelName: modelSchema.name,
                                           json: json,
                                           mutationType: mutationType,

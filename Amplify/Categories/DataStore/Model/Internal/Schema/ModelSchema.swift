@@ -92,7 +92,6 @@ public struct ModelSchema {
         guard !primaryKeys.isEmpty else {
             preconditionFailure("Primary Key not defined for `\(name)`")
         }
-
         return primaryKeys.map { $0.value }
     }
 
@@ -177,5 +176,13 @@ extension Dictionary where Key == String, Value == ModelField {
             }
             return one.name < other.name
         }
+    }
+}
+
+// MARK: Array + ModelField
+
+public extension Array where Element == ModelField {
+    var isRequired: Bool {
+        self.allSatisfy { $0.isRequired }
     }
 }

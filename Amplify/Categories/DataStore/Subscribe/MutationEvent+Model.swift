@@ -26,7 +26,7 @@ extension MutationEvent {
                 mutationType: MutationType,
                 version: Int? = nil) throws {
         let json = try model.toJSON()
-        self.init(modelId: model.id,
+        self.init(modelId: model.identifier.stringValue,
                   modelName: modelName,
                   json: json,
                   mutationType: mutationType,

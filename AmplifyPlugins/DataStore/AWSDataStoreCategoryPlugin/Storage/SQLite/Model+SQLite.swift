@@ -104,10 +104,12 @@ extension Model {
                 // Check if it is a Model or json object.
                 if let value = value as? Model {
                     let associatedModel: Model.Type = type(of: value)
-                    return value[associatedModel.schema.primaryKey.name] as? String
+                    // TODO CPK: fix this
+                    return value[associatedModel.schema.primaryKey[0].name] as? String
 
                 } else if let value = value as? [String: JSONValue],
-                   case .string(let primaryKeyValue) = value[modelSchema.primaryKey.name] {
+                    // TODO CPK: fix this
+                   case .string(let primaryKeyValue) = value[modelSchema.primaryKey[0].name] {
                     return primaryKeyValue
                 }
             }

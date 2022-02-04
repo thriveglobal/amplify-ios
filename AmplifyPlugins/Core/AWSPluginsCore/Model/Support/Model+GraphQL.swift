@@ -155,9 +155,9 @@ extension Model {
 
     private func getModelId(from value: Any, modelSchema: ModelSchema) -> String? {
         if let modelValue = value as? Model {
-            return modelValue.id
+            return modelValue.identifier.stringValue
         } else if let value = value as? [String: JSONValue],
-                  // TODO: fix this when associated model has composite primary key
+                  // TODO CPK: fix this when associated model has composite primary key
                   case .string(let primaryKeyValue) = value[modelSchema.primaryKey[0].name] {
             return primaryKeyValue
         }

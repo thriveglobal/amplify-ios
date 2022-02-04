@@ -92,9 +92,7 @@ struct SelectStatementMetadata {
         var columnMapping: ColumnMapping = [:]
 
         func visitAssociations(node: ModelSchema, namespace: String = "root") {
-            for foreignKey in node.foreignKeys {
-                let associatedModelName = foreignKey.requiredAssociatedModelName
-
+            for (associatedModelName, foreignKeyFields) in node.foreignKeys {
                 guard let associatedSchema = ModelRegistry.modelSchema(from: associatedModelName) else {
                     preconditionFailure("""
                     Could not retrieve schema for the model \(associatedModelName), verify that datastore is
@@ -104,21 +102,26 @@ struct SelectStatementMetadata {
                 let associatedTableName = associatedSchema.name
 
                 // columns
-                let alias = namespace == "root" ? foreignKey.name : "\(namespace).\(foreignKey.name)"
-                let associatedColumn = associatedSchema.primaryKey.columnName(forNamespace: alias)
-                let foreignKeyName = foreignKey.columnName(forNamespace: namespace)
-
+                let aliasBaseName = foreignKeyFields.count == 1 ? foreignKeyFields[0].name : "\(associatedModelName)Ref"
+                let alias = namespace == "root" ? aliasBaseName : "\(namespace).\(aliasBaseName)"
+                
+                let associatedColumns = associatedSchema.primaryKey.map { $0.columnName(forNamespace: alias) }
+                let foreignKeyNames = foreignKeyFields.map { $0.columnName(forNamespace: namespace) }
+                
                 // append columns from relationships
                 columns += associatedSchema.columns.map { field -> String in
                     columnMapping.updateValue((associatedSchema, field), forKey: "\(alias).\(field.name)")
                     return field.columnName(forNamespace: alias) + " as " + field.columnAlias(forNamespace: alias)
                 }
 
-                let joinType = foreignKey.isRequired ? "inner" : "left outer"
+                let joinType = foreignKeyFields.isRequired ? "inner" : "left outer"
+                let searchCondition = zip(associatedColumns, foreignKeyNames)
+                    .map { "\($0) = \($1)" }
+                    .joined(separator: " AND ")
 
                 joinStatements.append("""
                 \(joinType) join \"\(associatedTableName)\" as "\(alias)"
-                  on \(associatedColumn) = \(foreignKeyName)
+                  on \(searchCondition)
                 """)
                 visitAssociations(node: associatedSchema, namespace: alias)
             }

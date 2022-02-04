@@ -184,7 +184,7 @@ final class StorageEngine: StorageEngineBehavior {
         // mutation type
         let modelExists: Bool
         do {
-            modelExists = try storageAdapter.exists(modelSchema, withId: model.id, predicate: nil)
+            modelExists = try storageAdapter.exists(modelSchema, withIdentifier: model.identifier, predicate: nil)
         } catch {
             let dataStoreError = DataStoreError.invalidOperation(causedBy: error)
             completion(.failure(dataStoreError))
@@ -235,14 +235,27 @@ final class StorageEngine: StorageEngineBehavior {
         save(model, modelSchema: model.schema, condition: condition, completion: completion)
     }
 
+    @available(*, deprecated, message: "Use delete(:modelSchema:withIdentifier:predicate:completion")
     func delete<M: Model>(_ modelType: M.Type,
                           modelSchema: ModelSchema,
                           withId id: Model.Identifier,
                           predicate: QueryPredicate? = nil,
                           completion: @escaping (DataStoreResult<M?>) -> Void) {
-        var deleteInput = DeleteInput.withId(id: id)
+        delete(modelType,
+               modelSchema: modelSchema,
+               withIdentifier: [("id", id)],    // TODO CPK: replace this to use a shared/default initialiazer
+               predicate: predicate,
+               completion: completion)
+    }
+    
+    func delete<M: Model>(_ modelType: M.Type,
+                          modelSchema: ModelSchema,
+                          withIdentifier identifier: ModelIdentifier,
+                          predicate: QueryPredicate?,
+                          completion: @escaping DataStoreCallback<M?>) {
+        var deleteInput = DeleteInput.withIdentifier(id: identifier)
         if let predicate = predicate {
-            deleteInput = .withIdAndPredicate(id: id, predicate: predicate)
+            deleteInput = .withIdentifierAndPredicate(id: identifier, predicate: predicate)
         }
         let transactionResult = queryAndDeleteTransaction(modelType,
                                                           modelSchema: modelSchema,

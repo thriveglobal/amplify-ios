@@ -64,14 +64,14 @@ class SortedList<ModelType: Model> {
         }
 
         sortedModels.insert(model, at: index)
-        modelIds.insert(model.id)
+        modelIds.insert(model.identifier.stringValue)
     }
 
     /// Tries to remove the `model`, if removed then return `true`, otherwise `false`
     func remove(_ model: ModelType) -> Bool {
-        if modelIds.contains(model.id), let index = sortedModels.firstIndex(where: { $0.id == model.id }) {
+        if modelIds.contains(model.identifier.stringValue), let index = sortedModels.firstIndex(where: { $0.identifier.stringValue == model.identifier.stringValue }) {
             sortedModels.remove(at: index)
-            modelIds.remove(model.id)
+            modelIds.remove(model.identifier.stringValue)
             return true
         } else {
             return false
@@ -80,11 +80,11 @@ class SortedList<ModelType: Model> {
 
     /// Tries to replace the model with `model` if it already exists, otherwise append it to at the end
     func appendOrReplace(_ model: ModelType) {
-        if modelIds.contains(model.id), let index = sortedModels.firstIndex(where: { $0.id == model.id }) {
+        if modelIds.contains(model.identifier.stringValue), let index = sortedModels.firstIndex(where: { $0.identifier.stringValue == model.identifier.stringValue }) {
             sortedModels[index] = model
         } else {
             sortedModels.append(model)
-            modelIds.insert(model.id)
+            modelIds.insert(model.identifier.stringValue)
         }
     }
 }

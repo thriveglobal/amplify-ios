@@ -17,7 +17,7 @@ public struct AnyModel: Model {
     public let modelName: String
 
     public init(_ instance: Model) {
-        self.id = instance.id
+        self.id = instance.identifier.stringValue
         self.instance = instance
         self.modelName = instance.modelName
     }

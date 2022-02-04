@@ -37,12 +37,16 @@ struct UpdateStatement: SQLStatement {
         let columnsStatement = columns.map { column in
             "  \(column) = ?"
         }
+        
+        let searchCondition = modelSchema.primaryKey
+            .map { "\($0.columnName()) = ?" }
+            .joined(separator: " AND ")
 
         var sql = """
         update \(modelSchema.name)
         set
         \(columnsStatement.joined(separator: ",\n"))
-        where \(modelSchema.primaryKey.columnName()) = ?
+        where \(searchCondition)
         """
 
         if let conditionStatement = conditionStatement {
@@ -57,7 +61,8 @@ struct UpdateStatement: SQLStatement {
 
     var variables: [Binding?] {
         var bindings = model.sqlValues(for: updateColumns, modelSchema: modelSchema)
-        bindings.append(model.id)
+        // TODO CPK: can we use an extension for Array and Binding here?
+        bindings.append(contentsOf: model.identifier.values.map { $0.asBinding() })
         if let conditionStatement = conditionStatement {
             bindings.append(contentsOf: conditionStatement.variables)
         }

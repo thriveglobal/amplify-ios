@@ -31,7 +31,9 @@ extension AWSDataStorePlugin: DataStoreBaseBehavior {
                 throw DataStoreError.configuration("Unable to get storage adapter",
                                                    "")
             }
-            modelExists = try engine.storageAdapter.exists(modelSchema, withId: model.id, predicate: nil)
+            modelExists = try engine.storageAdapter.exists(modelSchema,
+                                                           withIdentifier: model.identifier,
+                                                           predicate: nil)
         } catch {
             if let dataStoreError = error as? DataStoreError {
                 completion(.failure(dataStoreError))
@@ -81,17 +83,17 @@ extension AWSDataStorePlugin: DataStoreBaseBehavior {
     }
 
     public func query<M: Model>(_ modelType: M.Type,
-                                            byIdentifier id: String,
-                                completion: (DataStoreResult<M?>) -> Void) where M:ModelIdentifiable,
-                                                                                 M.IdentifierFormat == ModelIdentifierFormat.Default {
-       // TODO: do the thing
+                                byIdentifier identifier: String,
+                                completion: DataStoreCallback<M?>) where M:ModelIdentifiable,
+                                                                         M.IdentifierFormat == ModelIdentifierFormat.Default {
+        query(modelType, where: predicate)
     }
 
     public func query<M: Model>(_ modelType: M.Type,
-                                            byIdentifier id: M.Identifier,
-                                            completion: (DataStoreResult<M?>) -> Void) where M: ModelIdentifiable,
-                                                                                             M.IdentifierFormat == ModelIdentifierFormat.Custom {
-        // TODO: do the thing
+                                byIdentifier identifier: M.Identifier,
+                                completion: DataStoreCallback<M?>) where M: ModelIdentifiable,
+                                                                         M.IdentifierFormat == ModelIdentifierFormat.Custom {
+        query(modelType, where: identifier.predicate)
     }
 
     public func query<M: Model>(_ modelType: M.Type,
@@ -278,7 +280,8 @@ extension AWSDataStorePlugin: DataStoreBaseBehavior {
             return
         }
         let metadata = MutationSyncMetadata.keys
-        let metadataId = MutationSyncMetadata.identifier(modelName: modelSchema.name, modelId: model.id)
+        let metadataId = MutationSyncMetadata.identifier(modelName: modelSchema.name,
+                                                         modelId: model.identifier.stringValue)
         storageEngine.query(MutationSyncMetadata.self,
                             predicate: metadata.id == metadataId,
                             sort: nil,

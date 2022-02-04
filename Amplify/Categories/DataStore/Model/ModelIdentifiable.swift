@@ -7,12 +7,6 @@
 
 import Foundation
 
-extension Model {
-    /// TODO: for backward compatibility, returns an empty string as default for models
-    /// with a different primary key
-    public var id: Identifier { "" }
-}
-
 /// AnyModelIdentifierFormat
 public protocol AnyModelIdentifierFormat {}
 
@@ -26,7 +20,7 @@ public enum ModelIdentifierFormat {
 /// that can be either a single field or a combination of fields
 public protocol ModelIdentifiable {
     associatedtype IdentifierFormat: AnyModelIdentifierFormat
-    associatedtype Identifier: ModelIdentifier
+    associatedtype Identifier: ModelIdentifierSerializable
 }
 
 public extension ModelIdentifiable where IdentifierFormat == ModelIdentifierFormat.Default {
@@ -37,11 +31,11 @@ public extension ModelIdentifiable where IdentifierFormat == ModelIdentifierForm
     typealias Identifier = ModelIdentifierCustom
 }
 
-public protocol ModelIdentifier {
+public protocol ModelIdentifierSerializable {
     var fields: [ModelFieldName: Persistable] { get }
 }
 
-public struct ModelIdentifierDefault: ModelIdentifier {
+public struct ModelIdentifierDefault: ModelIdentifierSerializable {
     static let fieldName = "id"
 
     public var fields: [ModelFieldName: Persistable]
@@ -51,10 +45,30 @@ public struct ModelIdentifierDefault: ModelIdentifier {
     }
 }
 
-public struct ModelIdentifierCustom {
+public struct ModelIdentifierCustom: ModelIdentifierSerializable {
     public var fields: [ModelFieldName: Persistable]
 
     public init(fields: [ModelFieldName: Persistable]) {
         self.fields = fields
     }
 }
+
+public typealias ModelIdentifier = [(name: ModelFieldName, value: Persistable)]
+extension ModelIdentifier {
+    public var stringValue: String {
+        map { "\($0.value)" }.joined(separator: "#")
+    }
+    
+    public var values: [Persistable] {
+        self.map { $0.value }
+    }
+    
+    public var predicate: QueryPredicate {
+        // TODO CPK: error handling if identifier is an empty array?
+        let firstField = self[0]
+        return self.reduce(field(firstField.name).eq(firstField.value)) { (acc, f) in
+            field(f.name).eq(f.value) && acc
+        }
+    }
+}
+

@@ -13,17 +13,19 @@ import AWSPluginsCore
 extension StorageEngine {
 
     enum DeleteInput {
-        case withId(id: Model.Identifier)
-        case withIdAndPredicate(id: Model.Identifier, predicate: QueryPredicate)
+        case withIdentifier(id: ModelIdentifier)
+        case withIdentifierAndPredicate(id: ModelIdentifier, predicate: QueryPredicate)
         case withPredicate(predicate: QueryPredicate)
 
         /// Returns a computed predicate based on the type of delete scenario it is.
         var predicate: QueryPredicate {
             switch self {
-            case .withId(let id):
-                return field("id").eq(id)
-            case .withIdAndPredicate(let id, let predicate):
-                return field("id").eq(id).and(predicate)
+            case .withIdentifier(let identifier):
+                return identifier.predicate
+            case .withIdentifierAndPredicate(let identifier, let predicate):
+                return QueryPredicateGroup(type: .and,
+                                           predicates: [identifier.predicate,
+                                                        predicate])
             case .withPredicate(let predicate):
                 return predicate
             }
@@ -44,7 +46,7 @@ extension StorageEngine {
             }
 
             guard !queriedModels.isEmpty else {
-                guard case .withIdAndPredicate(let id, _) = deleteInput else {
+                guard case .withIdentifierAndPredicate(let identifier, _) = deleteInput else {
                     // Query did not return any results, treat this as a successful no-op delete.
                     deletedResult = .success([M]())
                     return
@@ -52,7 +54,7 @@ extension StorageEngine {
 
                 // Query using the computed predicate did not return any results, check if model actually exists.
                 do {
-                    if try self.storageAdapter.exists(modelSchema, withId: id, predicate: nil) {
+                    if try self.storageAdapter.exists(modelSchema, withIdentifier: identifier, predicate: nil) {
                         queriedResult = .failure(
                             DataStoreError.invalidCondition(
                                 "Delete failed due to condition did not match existing model instance.",
@@ -67,7 +69,7 @@ extension StorageEngine {
                 return
             }
 
-            let modelIds = queriedModels.map {$0.id}
+            let modelIds = queriedModels.map { $0.id }
             associatedModels = self.recurseQueryAssociatedModels(modelSchema: modelSchema, ids: modelIds)
             let deleteCompletionWrapper: DataStoreCallback<[M]> = { deleteResult in
                 deletedResult = deleteResult

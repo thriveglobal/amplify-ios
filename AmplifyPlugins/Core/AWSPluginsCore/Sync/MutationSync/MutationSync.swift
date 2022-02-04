@@ -77,7 +77,7 @@ public struct MutationSync<ModelType: Model>: Decodable {
                   )
               }
 
-        self.syncMetadata = MutationSyncMetadata(modelId: model.id,
+        self.syncMetadata = MutationSyncMetadata(modelId: model.identifier.stringValue,
                                                  modelName: resolvedModelName,
                                                  deleted: deleted,
                                                  lastChangedAt: Int(lastChangedAt),

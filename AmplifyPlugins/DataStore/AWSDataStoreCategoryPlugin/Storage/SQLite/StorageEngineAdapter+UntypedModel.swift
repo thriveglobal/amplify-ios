@@ -25,7 +25,7 @@ extension SQLiteStorageEngineAdapter {
                 throw error
             }
 
-            let shouldUpdate = try exists(modelSchema, withId: untypedModel.id)
+            let shouldUpdate = try exists(modelSchema, withIdentifier: untypedModel.identifier)
 
             // TODO serialize result and create a new instance of the model
             // (some columns might be auto-generated after DB insert/update)

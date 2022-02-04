@@ -49,10 +49,10 @@ struct CreateTableStatement: SQLStatement {
         if hasForeignKeys {
             statement += ",\n"
         }
-
-        for (index, foreignKey) in foreignKeys.enumerated() {
-            statement += "  foreign key(\"\(foreignKey.sqlName)\") "
-            let associatedModel = foreignKey.requiredAssociatedModelName
+        
+        for (index, (associatedModel, foreignKeyFields)) in foreignKeys.enumerated() {
+            let columns = foreignKeyFields.map { $0.sqlName }.joined(separator: ", ")
+            statement += "  foreign key(\"\(columns)\") "
             guard let schema = ModelRegistry.modelSchema(from: associatedModel) else {
                 preconditionFailure("""
                 Could not retrieve schema for the model \(associatedModel), verify that datastore is initialized.
@@ -62,7 +62,7 @@ struct CreateTableStatement: SQLStatement {
             let associatedModelName = schema.name
             statement += "references \"\(associatedModelName)\"(\(associatedId)\n"
             statement += "    on delete cascade"
-            let isNotLastKey = index < foreignKeys.endIndex - 1
+            let isNotLastKey = index < foreignKeys.count - 1
             if isNotLastKey {
                 statement += "\n"
             }

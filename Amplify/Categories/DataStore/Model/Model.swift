@@ -26,7 +26,14 @@ public protocol Model: Codable {
     /// undefined behavior.
     var modelName: String { get }
 
-    @available(*, deprecated, message: "Use ModelIdentifiable conformance")
-    /// The Model identifier (aka primary key)
-    var id: Identifier { get }
+    var identifier: ModelIdentifier { get }
+}
+
+extension Model {
+    public var identifier: ModelIdentifier {
+        self.schema.primaryKey.map {
+            let value = self[$0.name] as? Persistable ?? ""
+            return (name: $0.name, value: value)
+        }
+    }
 }
