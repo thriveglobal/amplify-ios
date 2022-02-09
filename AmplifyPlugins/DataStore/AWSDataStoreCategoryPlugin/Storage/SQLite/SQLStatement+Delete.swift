@@ -29,6 +29,13 @@ struct DeleteStatement: SQLStatement {
         self.conditionStatement = conditionStatement
     }
 
+    init(modelSchema: ModelSchema,
+         withIdentifier identifier: AnyModelIdentifier,
+         predicate: QueryPredicate? = nil) {
+        self.init(modelSchema: modelSchema, predicate: identifier.predicate)
+    }
+
+    // TODO CPK: can we remove this?
     init(modelSchema: ModelSchema, withId id: Model.Identifier, predicate: QueryPredicate? = nil) {
         var queryPredicate: QueryPredicate = field("id").eq(id)
         if let predicate = predicate {

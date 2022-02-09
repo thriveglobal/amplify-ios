@@ -27,7 +27,7 @@ public protocol DataStoreBaseBehavior {
                                                                   M.IdentifierFormat == ModelIdentifierFormat.Default
 
     func query<M: Model>(_ modelType: M.Type,
-                         byIdentifier id: M.Identifier,
+                         byIdentifier id: M.IdentifierNext,
                          completion: DataStoreCallback<M?>) where M: ModelIdentifiable,
                                                                   M.IdentifierFormat == ModelIdentifierFormat.Custom
 
@@ -54,7 +54,7 @@ public protocol DataStoreBaseBehavior {
                                                                                M.IdentifierFormat == ModelIdentifierFormat.Default
 
     func delete<M: Model>(_ modelType: M.Type,
-                          withIdentifier id: M.Identifier,
+                          withIdentifier id: M.IdentifierNext,
                           where predicate: QueryPredicate?,
                           completion: @escaping DataStoreCallback<Void>) where M: ModelIdentifiable,
                                                                                M.IdentifierFormat == ModelIdentifierFormat.Custom

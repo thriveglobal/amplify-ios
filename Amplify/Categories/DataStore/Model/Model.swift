@@ -26,14 +26,19 @@ public protocol Model: Codable {
     /// undefined behavior.
     var modelName: String { get }
 
-    var identifier: ModelIdentifier { get }
+    var identifier: AnyModelIdentifier { get }
 }
 
 extension Model {
-    public var identifier: ModelIdentifier {
-        self.schema.primaryKey.map {
+    public var identifier: AnyModelIdentifier {
+        let fields: AnyModelIdentifier.Fields = schema.primaryKey.map {
             let value = self[$0.name] as? Persistable ?? ""
             return (name: $0.name, value: value)
+        }
+        if fields.count == 1, fields[0].name == ModelIdentifier<ModelIdentifierFormat.Default>.defaultIdentifier {
+            return ModelIdentifier<ModelIdentifierFormat.Default>(fields: fields)
+        } else {
+            return ModelIdentifier<ModelIdentifierFormat.Custom>(fields: fields)
         }
     }
 }

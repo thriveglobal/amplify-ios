@@ -21,16 +21,17 @@ protocol ModelStorageBehavior {
                         condition: QueryPredicate?,
                         completion: @escaping DataStoreCallback<M>)
 
+    // TODO CPK: can we remove this?
     @available(*, deprecated, message: "Use delete(:modelSchema:withIdentifier:predicate:completion")
     func delete<M: Model>(_ modelType: M.Type,
                           modelSchema: ModelSchema,
                           withId id: Model.Identifier,
                           predicate: QueryPredicate?,
                           completion: @escaping DataStoreCallback<M?>)
-    
+
     func delete<M: Model>(_ modelType: M.Type,
                           modelSchema: ModelSchema,
-                          withIdentifier identifier: ModelIdentifier,
+                          withIdentifier identifier: AnyModelIdentifier,
                           predicate: QueryPredicate?,
                           completion: @escaping DataStoreCallback<M?>)
 

@@ -26,10 +26,10 @@ extension DataStoreCategory: DataStoreBaseBehavior {
     }
 
     public func query<M: Model>(_ modelType: M.Type,
-                                byIdentifier id: M.Identifier,
+                                byIdentifier identifier: M.IdentifierNext,
                                 completion: (DataStoreResult<M?>) -> Void) where M: ModelIdentifiable,
                                                                                  M.IdentifierFormat == ModelIdentifierFormat.Custom {
-        plugin.query(modelType, byIdentifier: id, completion: completion)
+        plugin.query(modelType, byIdentifier: identifier, completion: completion)
     }
 
     public func query<M: Model>(_ modelType: M.Type,
@@ -63,7 +63,7 @@ extension DataStoreCategory: DataStoreBaseBehavior {
     }
 
     public func delete<M: Model>(_ modelType: M.Type,
-                                 withIdentifier id: M.Identifier,
+                                 withIdentifier id: M.IdentifierNext,
                                  where predicate: QueryPredicate?,
                                  completion: @escaping DataStoreCallback<Void>) where M: ModelIdentifiable,
                                                                                       M.IdentifierFormat == ModelIdentifierFormat.Custom {

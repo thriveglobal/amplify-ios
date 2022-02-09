@@ -104,10 +104,10 @@ struct SelectStatementMetadata {
                 // columns
                 let aliasBaseName = foreignKeyFields.count == 1 ? foreignKeyFields[0].name : "\(associatedModelName)Ref"
                 let alias = namespace == "root" ? aliasBaseName : "\(namespace).\(aliasBaseName)"
-                
+
                 let associatedColumns = associatedSchema.primaryKey.map { $0.columnName(forNamespace: alias) }
                 let foreignKeyNames = foreignKeyFields.map { $0.columnName(forNamespace: namespace) }
-                
+
                 // append columns from relationships
                 columns += associatedSchema.columns.map { field -> String in
                     columnMapping.updateValue((associatedSchema, field), forKey: "\(alias).\(field.name)")

@@ -183,6 +183,6 @@ extension Dictionary where Key == String, Value == ModelField {
 
 public extension Array where Element == ModelField {
     var isRequired: Bool {
-        self.allSatisfy { $0.isRequired }
+        allSatisfy { $0.isRequired }
     }
 }

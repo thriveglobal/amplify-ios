@@ -23,6 +23,7 @@ public struct ModelIdDecorator: ModelBasedGraphQLDocumentDecorator {
                 }
             }
         }
+        // TODO CPK: add initializer accepting a ModelIdentifier
         self.init(id: model.identifier.stringValue, fields: fields)
     }
 

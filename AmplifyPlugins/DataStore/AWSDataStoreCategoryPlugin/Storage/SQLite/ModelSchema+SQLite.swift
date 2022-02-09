@@ -104,10 +104,10 @@ extension ModelField: SQLColumn {
 extension Array where Element == ModelField {
     /// The name of the fields as SQL columns.
     var sqlName: String {
-        if self.count == 1, let field = self.first {
+        if count == 1, let field = first {
             return field.sqlName
         }
-        return "(\(self.map { $0.sqlName }.joined(separator: ", ")))"
+        return "(\(map { $0.sqlName }.joined(separator: ", ")))"
     }
 }
 

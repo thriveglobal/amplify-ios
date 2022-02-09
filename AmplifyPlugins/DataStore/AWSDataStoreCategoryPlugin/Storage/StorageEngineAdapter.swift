@@ -43,9 +43,9 @@ protocol StorageEngineAdapter: AnyObject, ModelStorageBehavior, ModelStorageErro
     func exists(_ modelSchema: ModelSchema,
                 withId id: Model.Identifier,
                 predicate: QueryPredicate?) throws -> Bool
-    
+
     func exists(_ modelSchema: ModelSchema,
-                withIdentifier id: ModelIdentifier,
+                withIdentifier id: AnyModelIdentifier,
                 predicate: QueryPredicate?) throws -> Bool
 
     func queryMutationSync(for models: [Model], modelName: String) throws -> [MutationSync<AnyModel>]

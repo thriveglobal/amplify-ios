@@ -37,7 +37,7 @@ struct UpdateStatement: SQLStatement {
         let columnsStatement = columns.map { column in
             "  \(column) = ?"
         }
-        
+
         let searchCondition = modelSchema.primaryKey
             .map { "\($0.columnName()) = ?" }
             .joined(separator: " AND ")

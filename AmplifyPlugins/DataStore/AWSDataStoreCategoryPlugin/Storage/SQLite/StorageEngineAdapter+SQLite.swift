@@ -13,7 +13,6 @@ import AWSPluginsCore
 /// [SQLite](https://sqlite.org) `StorageEngineAdapter` implementation. This class provides
 /// an integration layer between the AppSyncLocal `StorageEngine` and SQLite for local storage.
 final class SQLiteStorageEngineAdapter: StorageEngineAdapter {
-
     internal var connection: Connection!
     private var dbFilePath: URL?
     static let dbVersionKey = "com.amazonaws.DataStore.dbVersion"
@@ -198,6 +197,7 @@ final class SQLiteStorageEngineAdapter: StorageEngineAdapter {
         }
     }
 
+    // TODO CPK: can we remove this?
     func delete<M: Model>(_ modelType: M.Type,
                           modelSchema: ModelSchema,
                           withId id: Model.Identifier,
@@ -212,6 +212,23 @@ final class SQLiteStorageEngineAdapter: StorageEngineAdapter {
             }
         }
     }
+
+    func delete<M: Model>(_ modelType: M.Type,
+                          modelSchema: ModelSchema,
+                          withIdentifier identifier: AnyModelIdentifier,
+                          predicate: QueryPredicate?,
+                          completion: @escaping DataStoreCallback<M?>) {
+        do {
+            let statement = DeleteStatement(modelSchema: modelSchema,
+                                            withIdentifier: identifier,
+                                            predicate: predicate)
+            _ = try connection.prepare(statement.stringValue).run(statement.variables)
+            completion(.success(nil))
+        } catch {
+            completion(.failure(causedBy: error))
+        }
+    }
+
 
     func delete(untypedModelType modelType: Model.Type,
                 modelSchema: ModelSchema,
@@ -260,13 +277,17 @@ final class SQLiteStorageEngineAdapter: StorageEngineAdapter {
             completion(.failure(causedBy: error))
         }
     }
-    
+
     func exists(_ modelSchema: ModelSchema,
-                withIdentifier identifier: ModelIdentifier,
+                withIdentifier identifier: AnyModelIdentifier,
                 predicate: QueryPredicate? = nil) throws -> Bool {
-        let primaryKey = modelSchema.primaryKey.map { "\($0.sqlName) = ?" }.joined(separator: " and ")
-        var sql = "select count(\(primaryKey)) from \"\(modelSchema.name)\" where \(primaryKey)"
-        var variables: [Binding?] = identifier.map { $0.value.asBinding() }
+        let primaryKeyFields = modelSchema.primaryKey.sqlName
+        let primaryKeyCondition = modelSchema.primaryKey
+            .map { "\($0.sqlName) = ?" }
+            .joined(separator: " and ")
+        var sql = "select count(\(primaryKeyFields)) from \"\(modelSchema.name)\" where \(primaryKeyCondition)"
+        // TODO CPK: add an `asBinding` method to ModelIdentifierSerializable?
+        var variables: [Binding?] = identifier.values.map { $0.asBinding() }
         if let predicate = predicate {
             let conditionStatement = ConditionStatement(modelSchema: modelSchema, predicate: predicate)
             sql = """
@@ -291,8 +312,7 @@ final class SQLiteStorageEngineAdapter: StorageEngineAdapter {
                 withId id: Model.Identifier,
                 predicate: QueryPredicate? = nil) throws -> Bool {
         return try exists(modelSchema,
-                          // TODO CPK: replace this to use a shared/default initialiazer
-                          withIdentifier: [(name: "id", value: id)],
+                          withIdentifier: ModelIdentifier.makeDefault(id: id),
                           predicate: predicate)
     }
 

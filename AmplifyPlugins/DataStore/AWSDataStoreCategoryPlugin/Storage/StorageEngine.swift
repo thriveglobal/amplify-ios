@@ -20,7 +20,6 @@ typealias StorageEngineBehaviorFactory =
 
 // swiftlint:disable type_body_length
 final class StorageEngine: StorageEngineBehavior {
-
     // TODO: Make this private once we get a mutation flow that passes the type of mutation as needed
     let storageAdapter: StorageEngineAdapter
     var syncEngine: RemoteSyncEngineBehavior?
@@ -243,14 +242,14 @@ final class StorageEngine: StorageEngineBehavior {
                           completion: @escaping (DataStoreResult<M?>) -> Void) {
         delete(modelType,
                modelSchema: modelSchema,
-               withIdentifier: [("id", id)],    // TODO CPK: replace this to use a shared/default initialiazer
+               withIdentifier: ModelIdentifier.makeDefault(id: id),
                predicate: predicate,
                completion: completion)
     }
-    
+
     func delete<M: Model>(_ modelType: M.Type,
                           modelSchema: ModelSchema,
-                          withIdentifier identifier: ModelIdentifier,
+                          withIdentifier identifier: AnyModelIdentifier,
                           predicate: QueryPredicate?,
                           completion: @escaping DataStoreCallback<M?>) {
         var deleteInput = DeleteInput.withIdentifier(id: identifier)

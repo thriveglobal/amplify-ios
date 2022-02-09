@@ -38,7 +38,7 @@ struct CreateTableStatement: SQLStatement {
                 statement += ",\n"
             }
         }
-        
+
         // add primary key constraint using syntax PRIMARY KEY (fields..)
         let primaryKeyFields = modelSchema.primaryKey
             .map { "\"\($0.sqlName)\"" }
@@ -49,7 +49,7 @@ struct CreateTableStatement: SQLStatement {
         if hasForeignKeys {
             statement += ",\n"
         }
-        
+
         for (index, (associatedModel, foreignKeyFields)) in foreignKeys.enumerated() {
             let columns = foreignKeyFields.map { $0.sqlName }.joined(separator: ", ")
             statement += "  foreign key(\"\(columns)\") "
@@ -60,7 +60,7 @@ struct CreateTableStatement: SQLStatement {
             }
             let associatedId = schema.primaryKey.map { "\"\($0.sqlName)\"" }.joined(separator: ", ")
             let associatedModelName = schema.name
-            statement += "references \"\(associatedModelName)\"(\(associatedId)\n"
+            statement += "references \"\(associatedModelName)\"(\(associatedId))\n"
             statement += "    on delete cascade"
             let isNotLastKey = index < foreignKeys.count - 1
             if isNotLastKey {

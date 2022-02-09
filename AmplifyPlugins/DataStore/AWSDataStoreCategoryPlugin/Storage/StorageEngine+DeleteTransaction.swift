@@ -13,8 +13,8 @@ import AWSPluginsCore
 extension StorageEngine {
 
     enum DeleteInput {
-        case withIdentifier(id: ModelIdentifier)
-        case withIdentifierAndPredicate(id: ModelIdentifier, predicate: QueryPredicate)
+        case withIdentifier(id: AnyModelIdentifier)
+        case withIdentifierAndPredicate(id: AnyModelIdentifier, predicate: QueryPredicate)
         case withPredicate(predicate: QueryPredicate)
 
         /// Returns a computed predicate based on the type of delete scenario it is.
@@ -69,7 +69,8 @@ extension StorageEngine {
                 return
             }
 
-            let modelIds = queriedModels.map { $0.id }
+            // TODO CPK: fix this to use identifier as value not string value
+            let modelIds = queriedModels.map { $0.identifier.stringValue }
             associatedModels = self.recurseQueryAssociatedModels(modelSchema: modelSchema, ids: modelIds)
             let deleteCompletionWrapper: DataStoreCallback<[M]> = { deleteResult in
                 deletedResult = deleteResult
@@ -111,7 +112,8 @@ extension StorageEngine {
             let queriedModels = queryAssociatedModels(modelName: associatedModelName,
                                                       associatedField: associatedField,
                                                       ids: ids)
-            let associatedModelIds = queriedModels.map { $0.1.id }
+            // TODO CPK: fix this to use identifier as value not string value
+            let associatedModelIds = queriedModels.map { $0.1.identifier.stringValue }
             associatedModels.append(contentsOf: queriedModels)
             associatedModels.append(contentsOf: recurseQueryAssociatedModels(modelSchema: associatedModelSchema,
                                                                             ids: associatedModelIds))
