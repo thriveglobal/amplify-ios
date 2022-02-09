@@ -39,6 +39,6 @@ extension MutationSyncMetadata {
 
 
 extension MutationSyncMetadata: ModelIdentifiable {
-    public typealias IdentifierNext = ModelIdentifier<ModelIdentifierFormat.Default>
+    public typealias Identifier = ModelIdentifier<Self, ModelIdentifierFormat.Default>
     public typealias IdentifierFormat = ModelIdentifierFormat.Default
 }

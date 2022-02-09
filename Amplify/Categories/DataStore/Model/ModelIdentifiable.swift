@@ -19,38 +19,30 @@ public enum ModelIdentifierFormat {
 /// Define requirements for a model to be identifiable with a unique identifier
 /// that can be either a single field or a combination of fields
 public protocol ModelIdentifiable {
-    associatedtype IdentifierFormat: AnyModelIdentifierFormat
-    associatedtype IdentifierNext: AnyModelIdentifier
+    associatedtype IdentifierFormat: AnyModelIdentifierFormat = ModelIdentifierFormat.Default
+    associatedtype Identifier: AnyModelIdentifier
 }
-// TODO CPK: remove this?
-//public extension ModelIdentifiable where IdentifierFormat == ModelIdentifierFormat.Default {
-//    typealias IdentifierNext = ModelIdentifier<ModelIdentifierFormat.Default>
-//}
-//
-//public extension ModelIdentifiable where IdentifierFormat == ModelIdentifierFormat.Custom {
-//    typealias IdentifierNext = ModelIdentifier<ModelIdentifierFormat.Custom>
-//}
 
 public protocol AnyModelIdentifier {
     typealias Field = (name: String, value: Persistable)
     typealias Fields = [Field]
 
+    var fields: AnyModelIdentifier.Fields { get }
     var stringValue: String { get }
     var values: [Persistable] { get }
     var predicate: QueryPredicate { get }
 }
 
-public struct ModelIdentifier<Format: AnyModelIdentifierFormat>: AnyModelIdentifier {
-    var fields: ModelIdentifier.Fields
-    public var stringValue: String {
+public extension AnyModelIdentifier {
+    var stringValue: String {
         fields.map { "\($0.value)" }.joined(separator: "#")
     }
 
-    public var values: [Persistable] {
+    var values: [Persistable] {
         fields.map { $0.value }
     }
 
-    public var predicate: QueryPredicate {
+    var predicate: QueryPredicate {
         // TODO CPK: error handling if identifier is an empty array?
         let firstField = fields[0]
         return fields.reduce(field(firstField.name).eq(firstField.value)) { acc, modelField in
@@ -59,16 +51,20 @@ public struct ModelIdentifier<Format: AnyModelIdentifierFormat>: AnyModelIdentif
     }
 }
 
-public extension ModelIdentifier where Format == ModelIdentifierFormat.Default {
-    static let defaultIdentifier = "id"
-    static func makeDefault(id: String) -> Self {
-        Self(fields: [(name: Self.defaultIdentifier, value: id)])
+public struct ModelIdentifier<M: Model, F: AnyModelIdentifierFormat>: AnyModelIdentifier {
+    public var fields: Fields
+    public static var defaultIdentifier: String { "id" }
+
+    public static func makeDefault(id: String) -> ModelIdentifier<M, ModelIdentifierFormat.Default> {
+        ModelIdentifier<M, ModelIdentifierFormat.Default>(fields: [(name: Self.defaultIdentifier, value: id)])
     }
 }
-public extension ModelIdentifier where Format == ModelIdentifierFormat.Custom {
-    static let defaultIdentifier = "id"
+
+public extension ModelIdentifier where F == ModelIdentifierFormat.Custom {
     static func make(fields: AnyModelIdentifier.Field...) -> Self {
         Self(fields: fields)
     }
 }
+
+public typealias DefaultModelIdentifier<M: Model> = ModelIdentifier<M, ModelIdentifierFormat.Default>
 

@@ -86,11 +86,11 @@ extension AWSDataStorePlugin: DataStoreBaseBehavior {
                                 byIdentifier identifier: String,
                                 completion: DataStoreCallback<M?>) where M: ModelIdentifiable,
                                                                          M.IdentifierFormat == ModelIdentifierFormat.Default {
-        queryById(modelType, identifier: ModelIdentifier.makeDefault(id: identifier), completion: completion)
+        queryById(modelType, identifier: DefaultModelIdentifier<M>.makeDefault(id: identifier), completion: completion)
     }
 
     public func query<M: Model>(_ modelType: M.Type,
-                                byIdentifier identifier: M.IdentifierNext,
+                                byIdentifier identifier: M.Identifier,
                                 completion: DataStoreCallback<M?>) where M: ModelIdentifiable,
                                                                          M.IdentifierFormat == ModelIdentifierFormat.Custom {
         queryById(modelType, identifier: identifier, completion: completion)
@@ -163,14 +163,14 @@ extension AWSDataStorePlugin: DataStoreBaseBehavior {
     }
 
     public func delete<M: Model>(_ modelType: M.Type,
-                                 withIdentifier id: String,
+                                 withIdentifier identifier: String,
                                  where predicate: QueryPredicate?,
                                  completion: @escaping DataStoreCallback<Void>) where M: ModelIdentifiable,
                                                                                       M.IdentifierFormat == ModelIdentifierFormat.Default {
 
         storageEngine.delete(modelType,
                              modelSchema: modelType.schema,
-                             withIdentifier: ModelIdentifier.makeDefault(id: id),
+                             withIdentifier: DefaultModelIdentifier<M>.makeDefault(id: identifier),
                              predicate: predicate) { result in
             self.onDeleteCompletion(result: result,
                                     modelSchema: modelType.schema,
@@ -179,7 +179,7 @@ extension AWSDataStorePlugin: DataStoreBaseBehavior {
     }
 
     public func delete<M: Model>(_ modelType: M.Type,
-                                 withIdentifier id: M.IdentifierNext,
+                                 withIdentifier identifier: M.Identifier,
                                  where predicate: QueryPredicate?,
                                  completion: @escaping DataStoreCallback<Void>) where M: ModelIdentifiable,
                                                                                       M.IdentifierFormat == ModelIdentifierFormat.Custom {

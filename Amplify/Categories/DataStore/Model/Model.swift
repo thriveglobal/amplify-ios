@@ -11,7 +11,6 @@ import Foundation
 
 /// All persistent models should conform to the Model protocol.
 public protocol Model: Codable {
-
     /// Alias of Model identifier (i.e. primary key)
     typealias Identifier = String
 
@@ -35,10 +34,10 @@ extension Model {
             let value = self[$0.name] as? Persistable ?? ""
             return (name: $0.name, value: value)
         }
-        if fields.count == 1, fields[0].name == ModelIdentifier<ModelIdentifierFormat.Default>.defaultIdentifier {
-            return ModelIdentifier<ModelIdentifierFormat.Default>(fields: fields)
+        if fields.count == 1, fields[0].name == ModelIdentifier<Self, ModelIdentifierFormat.Default>.defaultIdentifier {
+            return ModelIdentifier<Self, ModelIdentifierFormat.Default>(fields: fields)
         } else {
-            return ModelIdentifier<ModelIdentifierFormat.Custom>(fields: fields)
+            return ModelIdentifier<Self, ModelIdentifierFormat.Custom>(fields: fields)
         }
     }
 }

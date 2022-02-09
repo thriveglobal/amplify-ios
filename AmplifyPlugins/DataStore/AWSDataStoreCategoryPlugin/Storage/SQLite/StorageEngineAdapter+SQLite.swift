@@ -312,7 +312,7 @@ final class SQLiteStorageEngineAdapter: StorageEngineAdapter {
                 withId id: Model.Identifier,
                 predicate: QueryPredicate? = nil) throws -> Bool {
         return try exists(modelSchema,
-                          withIdentifier: ModelIdentifier.makeDefault(id: id),
+                          withIdentifier: DefaultModelIdentifier<AnyModel>.makeDefault(id: id),
                           predicate: predicate)
     }
 

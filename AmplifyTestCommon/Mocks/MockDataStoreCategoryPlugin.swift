@@ -49,7 +49,7 @@ class MockDataStoreCategoryPlugin: MessageReporter, DataStoreCategoryPlugin {
             }
         }
     }
-    
+
     func query<M: Model>(_ modelType: M.Type,
                          byIdentifier id: String,
                          completion: (DataStoreResult<M?>) -> Void) where M: ModelIdentifiable,
@@ -79,10 +79,10 @@ class MockDataStoreCategoryPlugin: MessageReporter, DataStoreCategoryPlugin {
             }
         }
     }
-    
+
     func query<M>(_ modelType: M.Type,
-                  byIdentifier id: M.IdentifierNext,
-                  completion: (DataStoreResult<M?>) -> Void) where M : Model, M : ModelIdentifiable,
+                  byIdentifier id: M.Identifier,
+                  completion: (DataStoreResult<M?>) -> Void) where M: Model, M: ModelIdentifiable,
                                                                    M.IdentifierFormat == ModelIdentifierFormat.Custom {
         notify("queryWithIdentifier")
 
@@ -105,7 +105,7 @@ class MockDataStoreCategoryPlugin: MessageReporter, DataStoreCategoryPlugin {
             }
         }
     }
-    
+
     func delete<M: Model>(_ modelType: M.Type,
                           withIdentifier id: String,
                           where predicate: QueryPredicate? = nil,
@@ -119,11 +119,11 @@ class MockDataStoreCategoryPlugin: MessageReporter, DataStoreCategoryPlugin {
             }
         }
     }
-    
+
     func delete<M>(_ modelType: M.Type,
-                   withIdentifier id: M.IdentifierNext,
+                   withIdentifier id: M.Identifier,
                    where predicate: QueryPredicate?,
-                   completion: @escaping DataStoreCallback<Void>) where M : Model, M : ModelIdentifiable,
+                   completion: @escaping DataStoreCallback<Void>) where M: Model, M: ModelIdentifiable,
                                                                         M.IdentifierFormat == ModelIdentifierFormat.Custom {
         notify("deleteByIdentifier")
 

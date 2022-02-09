@@ -242,7 +242,7 @@ final class StorageEngine: StorageEngineBehavior {
                           completion: @escaping (DataStoreResult<M?>) -> Void) {
         delete(modelType,
                modelSchema: modelSchema,
-               withIdentifier: ModelIdentifier.makeDefault(id: id),
+               withIdentifier: DefaultModelIdentifier<M>.makeDefault(id: id),
                predicate: predicate,
                completion: completion)
     }
