@@ -22,7 +22,7 @@ public protocol ModelIdentifiable {
     associatedtype IdentifierFormat: AnyModelIdentifierFormat
     associatedtype IdentifierNext: AnyModelIdentifier
 }
-
+// TODO CPK: remove this?
 //public extension ModelIdentifiable where IdentifierFormat == ModelIdentifierFormat.Default {
 //    typealias IdentifierNext = ModelIdentifier<ModelIdentifierFormat.Default>
 //}
