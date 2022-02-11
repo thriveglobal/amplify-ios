@@ -88,11 +88,27 @@ public struct ModelSchema {
     public let sortedFields: [ModelField]
 
     public var primaryKey: [ModelField] {
-        let primaryKeys = fields.filter { $1.isPrimaryKey }
-        guard !primaryKeys.isEmpty else {
+        var primaryKeysFields: [String: ModelField] = [:]
+
+        /// if indexes aren't defined most likely the model has a default `id` as PK
+        /// so we have to rely on the `.primaryKey` attribute of each individual field
+        if indexes.isEmpty {
+            primaryKeysFields = fields.filter { $1.isPrimaryKey }
+        
+        /// Use the array of fields with a primary key index
+        } else if let fieldNames = primaryKeyIndexFields {
+            primaryKeysFields = Dictionary(uniqueKeysWithValues: fieldNames.compactMap {
+                if let field = field(withName: $0) {
+                    return ($0, field)
+                }
+                return nil
+            })
+        }
+
+        guard !primaryKeysFields.isEmpty else {
             preconditionFailure("Primary Key not defined for `\(name)`")
         }
-        return primaryKeys.map { $0.value }
+        return primaryKeysFields.map { $0.value }
     }
 
     public init(name: String,
@@ -138,7 +154,7 @@ public extension ModelSchema {
     /// Returns the list of fields that make up the primary key for the model.
     /// In case of a custom primary key, the model has a `@key` directive
     /// without a name and at least 1 field
-    var customPrimaryIndexFields: [ModelFieldName]? {
+    var primaryKeyIndexFields: [ModelFieldName]? {
         attributes.compactMap {
             if case let .index(fields, name) = $0, name == nil, fields.count >= 1 {
                 return fields
