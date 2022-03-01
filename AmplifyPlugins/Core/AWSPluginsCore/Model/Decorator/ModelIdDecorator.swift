@@ -14,7 +14,7 @@ public struct ModelIdDecorator: ModelBasedGraphQLDocumentDecorator {
     private let identifierFields: [(name: String, value: String)]
 
     public init(model: Model, schema: ModelSchema) {
-        self.identifierFields = model.identifier.fields.compactMap { fieldName, _ in
+        self.identifierFields = model.identifier(schema: schema).fields.compactMap { fieldName, _ in
             guard let value = model.graphQLInputForPrimaryKey(modelFieldName: fieldName) else {
                       return nil
                   }

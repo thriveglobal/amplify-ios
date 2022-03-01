@@ -64,15 +64,21 @@ class SortedList<ModelType: Model> {
         }
 
         sortedModels.insert(model, at: index)
-        modelIds.insert(model.identifier.stringValue)
+        // TODO CPK: review this
+        modelIds.insert(model.identifier(schema: modelSchema).stringValue)
     }
 
     /// Tries to remove the `model`, if removed then return `true`, otherwise `false`
     func remove(_ model: ModelType) -> Bool {
-        if modelIds.contains(model.identifier.stringValue),
-           let index = sortedModels.firstIndex(where: { $0.identifier.stringValue == model.identifier.stringValue }) {
+        // TODO CPK: review this
+        let identifier = model.identifier(schema: modelSchema)
+        if modelIds.contains(identifier.stringValue),
+           let index = sortedModels.firstIndex(where: {
+               // TODO CPK: review this
+               $0.identifier(schema: $0.schema).stringValue == identifier.stringValue }) {
             sortedModels.remove(at: index)
-            modelIds.remove(model.identifier.stringValue)
+            // TODO CPK: review this
+            modelIds.remove(identifier.stringValue)
             return true
         } else {
             return false
@@ -81,12 +87,14 @@ class SortedList<ModelType: Model> {
 
     /// Tries to replace the model with `model` if it already exists, otherwise append it to at the end
     func appendOrReplace(_ model: ModelType) {
-        if modelIds.contains(model.identifier.stringValue),
-           let index = sortedModels.firstIndex(where: { $0.identifier.stringValue == model.identifier.stringValue }) {
+        // TODO CPK: review this
+        let identifier = model.identifier(schema: modelSchema)
+        if modelIds.contains(identifier.stringValue),
+           let index = sortedModels.firstIndex(where: { $0.identifier(schema: $0.schema).stringValue == identifier.stringValue }) {
             sortedModels[index] = model
         } else {
             sortedModels.append(model)
-            modelIds.insert(model.identifier.stringValue)
+            modelIds.insert(identifier.stringValue)
         }
     }
 }

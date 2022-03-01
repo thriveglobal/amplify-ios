@@ -131,7 +131,8 @@ final class SQLiteStorageEngineAdapter: StorageEngineAdapter {
                         completion: DataStoreCallback<M>) {
         do {
             let modelType = type(of: model)
-            let modelExists = try exists(modelSchema, withId: model.identifier.stringValue)
+            let modelExists = try exists(modelSchema,
+                                         withIdentifier: model.identifier(schema: modelSchema))
 
             if !modelExists {
                 if let condition = condition, !condition.isAll {
@@ -148,7 +149,9 @@ final class SQLiteStorageEngineAdapter: StorageEngineAdapter {
 
             if modelExists {
                 if let condition = condition, !condition.isAll {
-                    let modelExistsWithCondition = try exists(modelSchema, withId: model.identifier.stringValue, predicate: condition)
+                    let modelExistsWithCondition = try exists(modelSchema,
+                                                              withIdentifier: model.identifier(schema: modelSchema),
+                                                              predicate: condition)
                     if !modelExistsWithCondition {
                         let dataStoreError = DataStoreError.invalidCondition(
                         "Save failed due to condition did not match existing model instance.",
@@ -166,7 +169,7 @@ final class SQLiteStorageEngineAdapter: StorageEngineAdapter {
             }
 
             // load the recent saved instance and pass it back to the callback
-            query(modelType, modelSchema: modelSchema, predicate: field("id").eq(model.identifier.stringValue)) {
+            query(modelType, modelSchema: modelSchema, predicate: model.identifier(schema: modelSchema).predicate) {
                 switch $0 {
                 case .success(let result):
                     if let saved = result.first {
@@ -332,7 +335,9 @@ final class SQLiteStorageEngineAdapter: StorageEngineAdapter {
 
         // group models by id for fast access when creating the tuple
         let modelById = Dictionary(grouping: models,
-                                   by: { MutationSyncMetadata.identifier(modelName: modelName, modelId: $0.identifier.stringValue) })
+                                   by: { MutationSyncMetadata.identifier(modelName: modelName,
+                                                                         // TODO CPK: stringValue may not be correct
+                                                                         modelId: $0.identifier(schema: $0.schema).stringValue) })
             .mapValues { $0.first! }
         let ids = [String](modelById.keys)
         let rows = try connection.prepare(sql).bind(ids)

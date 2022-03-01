@@ -62,7 +62,7 @@ struct UpdateStatement: SQLStatement {
     var variables: [Binding?] {
         var bindings = model.sqlValues(for: updateColumns, modelSchema: modelSchema)
         // TODO CPK: can we use an extension for Array and Binding here?
-        bindings.append(contentsOf: model.identifier.values.map { $0.asBinding() })
+        bindings.append(contentsOf: model.identifier(schema: modelSchema).values.map { $0.asBinding() })
         if let conditionStatement = conditionStatement {
             bindings.append(contentsOf: conditionStatement.variables)
         }

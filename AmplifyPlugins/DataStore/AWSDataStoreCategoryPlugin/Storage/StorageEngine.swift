@@ -183,7 +183,9 @@ final class StorageEngine: StorageEngineBehavior {
         // mutation type
         let modelExists: Bool
         do {
-            modelExists = try storageAdapter.exists(modelSchema, withIdentifier: model.identifier, predicate: nil)
+            modelExists = try storageAdapter.exists(modelSchema,
+                                                    withIdentifier: model.identifier(schema: modelSchema),
+                                                    predicate: nil)
         } catch {
             let dataStoreError = DataStoreError.invalidOperation(causedBy: error)
             completion(.failure(dataStoreError))

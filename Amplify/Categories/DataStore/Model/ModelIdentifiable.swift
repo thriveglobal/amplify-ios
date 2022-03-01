@@ -29,6 +29,7 @@ public protocol AnyModelIdentifier {
 
     var fields: AnyModelIdentifier.Fields { get }
     var stringValue: String { get }
+    var keys: [String] { get }
     var values: [Persistable] { get }
     var predicate: QueryPredicate { get }
 }
@@ -36,6 +37,10 @@ public protocol AnyModelIdentifier {
 public extension AnyModelIdentifier {
     var stringValue: String {
         fields.map { "\($0.value)" }.joined(separator: "#")
+    }
+
+    var keys: [String] {
+        fields.map { $0.name }
     }
 
     var values: [Persistable] {
@@ -62,6 +67,10 @@ public struct ModelIdentifier<M: Model, F: AnyModelIdentifierFormat>: AnyModelId
 
 public extension ModelIdentifier where F == ModelIdentifierFormat.Custom {
     static func make(fields: AnyModelIdentifier.Field...) -> Self {
+        Self(fields: fields)
+    }
+    // Flutter needs this
+    static func make(fields: [AnyModelIdentifier.Field]) -> Self {
         Self(fields: fields)
     }
 }

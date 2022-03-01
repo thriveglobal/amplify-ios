@@ -25,11 +25,11 @@ public protocol Model: Codable {
     /// undefined behavior.
     var modelName: String { get }
 
-    var identifier: AnyModelIdentifier { get }
+    func identifier(schema: ModelSchema) -> AnyModelIdentifier
 }
 
 extension Model {
-    public var identifier: AnyModelIdentifier {
+    public func identifier(schema: ModelSchema) -> AnyModelIdentifier {
         let fields: AnyModelIdentifier.Fields = schema.primaryKey.map {
             let value = self[$0.name] as? Persistable ?? ""
             return (name: $0.name, value: value)

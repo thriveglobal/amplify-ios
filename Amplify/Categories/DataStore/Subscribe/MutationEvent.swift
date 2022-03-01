@@ -44,7 +44,7 @@ public struct MutationEvent: Model {
                           version: Int? = nil,
                           graphQLFilterJSON: String? = nil) throws {
         let json = try model.toJSON()
-        self.init(modelId: model.identifier.stringValue,
+        self.init(modelId: model.identifier(schema: modelSchema).stringValue,
                   modelName: modelSchema.name,
                   json: json,
                   mutationType: mutationType,

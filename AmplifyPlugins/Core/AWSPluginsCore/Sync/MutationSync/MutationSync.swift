@@ -77,7 +77,8 @@ public struct MutationSync<ModelType: Model>: Decodable {
                   )
               }
 
-        self.syncMetadata = MutationSyncMetadata(modelId: model.identifier.stringValue,
+        // TODO CPK: is it safe to use MutationSyncMetadata.schema here?
+        self.syncMetadata = MutationSyncMetadata(modelId: model.identifier(schema: MutationSyncMetadata.schema).stringValue,
                                                  modelName: resolvedModelName,
                                                  deleted: deleted,
                                                  lastChangedAt: Int(lastChangedAt),

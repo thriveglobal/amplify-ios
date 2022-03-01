@@ -31,7 +31,7 @@ extension AWSDataStorePlugin: DataStoreBaseBehavior {
                                                    "")
             }
             modelExists = try engine.storageAdapter.exists(modelSchema,
-                                                           withIdentifier: model.identifier,
+                                                           withIdentifier: model.identifier(schema: modelSchema),
                                                            predicate: nil)
         } catch {
             if let dataStoreError = error as? DataStoreError {
@@ -199,7 +199,7 @@ extension AWSDataStorePlugin: DataStoreBaseBehavior {
         reinitStorageEngineIfNeeded()
         storageEngine.delete(type(of: model),
                              modelSchema: modelSchema,
-                             withIdentifier: model.identifier,
+                             withIdentifier: model.identifier(schema: modelSchema),
                              predicate: predicate) { result in
             self.onDeleteCompletion(result: result, modelSchema: modelSchema, completion: completion)
         }
@@ -308,7 +308,7 @@ extension AWSDataStorePlugin: DataStoreBaseBehavior {
         }
         let metadata = MutationSyncMetadata.keys
         let metadataId = MutationSyncMetadata.identifier(modelName: modelSchema.name,
-                                                         modelId: model.identifier.stringValue)
+                                                         modelId: model.identifier(schema: modelSchema).stringValue)
         storageEngine.query(MutationSyncMetadata.self,
                             predicate: metadata.id == metadataId,
                             sort: nil,

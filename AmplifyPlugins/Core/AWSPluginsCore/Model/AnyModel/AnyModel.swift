@@ -17,7 +17,8 @@ public struct AnyModel: Model {
     public let modelName: String
 
     public init(_ instance: Model) {
-        self.id = instance.identifier.stringValue
+        // TODO CPK: is it safe to use AnyModel.schema property here?
+        self.id = instance.identifier(schema: AnyModel.schema).stringValue
         self.instance = instance
         self.modelName = instance.modelName
     }

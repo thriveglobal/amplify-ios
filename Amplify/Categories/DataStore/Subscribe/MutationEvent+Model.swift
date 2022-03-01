@@ -26,7 +26,8 @@ extension MutationEvent {
                 mutationType: MutationType,
                 version: Int? = nil) throws {
         let json = try model.toJSON()
-        self.init(modelId: model.identifier.stringValue,
+        // TODO CPK: is it safe to access model.schema here?
+        self.init(modelId: model.identifier(schema: model.schema).stringValue,
                   modelName: modelName,
                   json: json,
                   mutationType: mutationType,
